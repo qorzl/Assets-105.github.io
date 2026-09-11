@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>105 | Sebastian Arcade</title>
     <style>
-        /* Base Page Setup */
+        /* Base Page Layout Styling */
         * {
             box-sizing: border-box;
             margin: 0;
@@ -20,7 +20,7 @@
             display: flex;
         }
 
-        /* Sidebar Navigation Layout */
+        /* Sidebar Dynamic List Menu */
         #sidebar {
             width: 300px;
             background-color: #1a1a1a;
@@ -53,7 +53,7 @@
             border-color: #0076ff;
         }
 
-        /* Game List Menu Container */
+        /* Nav Scroll Wrapper */
         #game-list {
             flex: 1;
             overflow-y: auto;
@@ -85,13 +85,20 @@
             font-weight: 600;
         }
 
-        /* Main Screen Frame Window */
+        /* Main Fullscreen Display Frame Container */
         #main-content {
             flex: 1;
             display: flex;
             flex-direction: column;
             height: 100%;
             background-color: #262626;
+            position: relative;
+        }
+        #iframe-wrapper {
+            width: 100%;
+            height: 100%;
+            display: none;
+            position: relative;
         }
         #arcade-frame {
             width: 100%;
@@ -105,6 +112,28 @@
             color: #666666;
             font-size: 18px;
         }
+
+        /* Floating Fullscreen Action Trigger */
+        #fullscreen-btn {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            background-color: rgba(0, 118, 255, 0.85);
+            color: white;
+            border: none;
+            padding: 12px 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 14px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+            display: none;
+            z-index: 9999;
+            transition: background 0.2s;
+        }
+        #fullscreen-btn:hover {
+            background-color: rgb(0, 118, 255);
+        }
     </style>
 </head>
 <body>
@@ -113,10 +142,14 @@
     <div id="sidebar">
         <div id="sidebar-header">
             <h1>105 | Sebastian</h1>
-            <input type="text" id="search-bar" placeholder="Search 200+ games..." oninput="filterGames()">
+            <input type="text" id="search-bar" placeholder="Search games..." oninput="filterGames()">
         </div>
         <div id="game-list">
-            <!-- Core Featured Catalog Examples -->
+            <!-- New Requested Direct Additions -->
+            <button class="game-item" onclick="loadGame('brotato/index.html', this)">🥔 Brotato</button>
+            <button class="game-item" onclick="loadGame('smashkarts/index.html', this)">🏎️ Smash Karts</button>
+            
+            <!-- Standard Featured Catalog Grid -->
             <button class="game-item" onclick="loadGame('1v1lol/index.html', this)">🔫 1v1.LOL</button>
             <button class="game-item" onclick="loadGame('MonkeyMart/index.html', this)">🐒 Monkey Mart</button>
             <button class="game-item" onclick="loadGame('cluster-rush/index.html', this)">🚚 Cluster Rush</button>
@@ -128,40 +161,53 @@
             <button class="game-item" onclick="loadGame('backrooms/index.html', this)">👁️ The Backrooms</button>
             <button class="game-item" onclick="loadGame('bitlife/index.html', this)">💼 BitLife</button>
             <button class="game-item" onclick="loadGame('bloonstd2/index.html', this)">🎈 Bloons TD 2</button>
-            
-            <!-- Add any extra game buttons here using format:
-            <button class="game-item" onclick="loadGame('FOLDER_NAME/index.html', this)">Game Name</button> 
-            -->
         </div>
     </div>
 
     <!-- Right Screen Framework Display Window -->
     <div id="main-content">
         <div id="placeholder-text">Select a game from the sidebar menu to start playing</div>
-        <iframe id="arcade-frame" src="" style="display: none;" allowfullscreen></iframe>
+        <div id="iframe-wrapper">
+            <iframe id="arcade-frame" src="" allowfullscreen></iframe>
+            <button id="fullscreen-btn" onclick="toggleFullscreen()">🖥️ Go Fullscreen</button>
+        </div>
     </div>
 
     <!-- Interactive Execution Logic -->
     <script>
-        // Function to smoothly load the game folder into the iframe screen container
+        // Load Selected Game Handler
         function loadGame(gameUrl, element) {
+            const wrapper = document.getElementById('iframe-wrapper');
             const iframe = document.getElementById('arcade-frame');
             const placeholder = document.getElementById('placeholder-text');
+            const fsBtn = document.getElementById('fullscreen-btn');
             
-            // Remove active coloring from previously clicked items
             const items = document.querySelectorAll('.game-item');
             items.forEach(item => item.classList.remove('active'));
             
-            // Activate current selection styling
             element.classList.add('active');
             
-            // Swap placeholder display with functional iframe target container
             placeholder.style.display = 'none';
-            iframe.style.display = 'block';
+            wrapper.style.display = 'block';
+            fsBtn.style.display = 'block';
             iframe.src = gameUrl;
         }
 
-        // Live filtration search tool script configuration
+        // Fullscreen Toggle Engine
+        function toggleFullscreen() {
+            const iframe = document.getElementById('arcade-frame');
+            
+            // Check native browser permissions and execute element expansion
+            if (iframe.requestFullscreen) {
+                iframe.requestFullscreen();
+            } else if (iframe.webkitRequestFullscreen) { /* Safari Engine Fallback */
+                iframe.webkitRequestFullscreen();
+            } else if (iframe.msRequestFullscreen) { /* IE/Edge Fallback */
+                iframe.msRequestFullscreen();
+            }
+        }
+
+        // Real-Time Search Bar Filter Configuration
         function filterGames() {
             const input = document.getElementById('search-bar').value.toLowerCase();
             const buttons = document.getElementsByClassName('game-item');
